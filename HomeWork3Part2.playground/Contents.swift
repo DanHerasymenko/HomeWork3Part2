@@ -61,7 +61,7 @@ struct MotherBoard {
 }
 
 // Клас - зарезервовано для опису типу продукта і зберігання віповідних значень,
-// також має функцію, яка повертає усі значення у тектовому вігляді в певному форматі
+// також має функцію, яка повертає усі значення у тектовому вигляді в певному форматі
 class Product {
     // Поля класу
     var name = ""
@@ -93,9 +93,7 @@ class Cart {
     }
     
     func clear() {
-        for index in 0 ... products.count {
-            products.remove(at: index)
-        }
+            products.removeAll()
     }
     
     func totalPrice() -> Double {
@@ -202,22 +200,27 @@ class Screen {
         
         let separatorLine = "\n-----------------------------------------------"
         
-        for index in 0 ..< cart.products.count {
-            let product = cart.products[index]
-            resultStringToPrint += "\n\(index + 1)\n"
-            resultStringToPrint += product.textDescription()
+        if cart.products.count == 0 {
+             resultStringToPrint = "Кошик пустий. Для оформлення замовлення додайте хоча б один товар"
+        } else {
+                for index in 0 ..< cart.products.count {
+                    let product = cart.products[index]
+                    resultStringToPrint += "\n\(index + 1)\n"
+                    resultStringToPrint += product.textDescription()
+                }
+            resultStringToPrint += separatorLine
+            
+            resultStringToPrint += "\nTotal price: \(String(format: "%.2f", cart.totalPrice())) UAH"
+            resultStringToPrint += "\nDiscount: \(cart.discountPercentValue())%"
+            
+            resultStringToPrint += separatorLine
+            
+            resultStringToPrint += "\nTotal price with Discount:\n\(String(format: "%.2f", cart.totalPriceWithDiscount())) UAH"
+            
+            resultStringToPrint += separatorLine + separatorLine
         }
         
-        resultStringToPrint += separatorLine
         
-        resultStringToPrint += "\nTotal price: \(String(format: "%.2f", cart.totalPrice())) UAH"
-        resultStringToPrint += "\nDiscount: \(cart.discountPercentValue())%"
-        
-        resultStringToPrint += separatorLine
-        
-        resultStringToPrint += "\nTotal price with Discount:\n\(String(format: "%.2f", cart.totalPriceWithDiscount())) UAH"
-        
-        resultStringToPrint += separatorLine + separatorLine
         
         print(resultStringToPrint)
     }
@@ -240,7 +243,7 @@ class Screen {
         
         var resultStringToPrint = ""
         
-        resultStringToPrint += "------------------------ Обрана валюта: \(currency.rawValue) ---------------------------"
+        resultStringToPrint += "\n------------------------ Обрана валюта: \(currency.rawValue) ---------------------------"
         
         var resultProducts = cart.products.compactMap { $0 }
         
@@ -250,7 +253,7 @@ class Screen {
             
             resultStringToPrint += "\n\(index + 1) "
             resultStringToPrint += "Назва продукту: \(product.name), "
-            resultStringToPrint += "Ціна: \(currency.rawValue) \(String(format: "%.2f", product.price))"
+            resultStringToPrint += "Ціна: \(currency.rawValue) \(String(format: "%.2f", productprice))"
         }
         
         resultStringToPrint += "\n---------------------------------------------------------------------"
@@ -287,7 +290,7 @@ class Screen {
 
 // Початок коду сценарію для Пункт 1
 
-/*
+
 
 print("SCENARIO 1:\n")
 
@@ -304,7 +307,7 @@ let cart = Cart()
 // Звертаємось до поля (змінної класу Cart), щоб записати в неї масив сконвертованих даних
 cart.products = dataMapper.products(from: receivedProducts)
 // Звертаємось до поля (змінної класу Cart), щоб записати значення discount
-cart.discount = .none
+cart.discount = .vip
 
 // Створюємо константу для зберігання "екземпляру" (instanse) Screen
 let screen = Screen()
@@ -312,7 +315,7 @@ let screen = Screen()
 // і передаємо константу cart як параметр у функцію
 screen.printCheck(cart: cart)
 
-*/
+
 
 // Кінець коду сценарію для Пункт 1
 
@@ -359,19 +362,19 @@ screen.printCheck(cart: cart)
 
 // Початок коду сценарію для Пункт 2
 
-/*
  
 print("\nSCENARIO 2:\n")
 
 // Користувач додає три товари у кошик
 cart.products = dataMapper.products(from: responseFromServer.get3Products())
+
 // Користувач натискає десь на екрані кнопку "Очистити кошик" (Clear)
+
 cart.clear()
 
 // Користувач натискає кнопку "Оформити замовлення", щоб побачити чек
 screen.printCheck(cart: cart)
 
- */
 
 // Кінець коду сценарію для Пункт 2
 
@@ -412,9 +415,8 @@ screen.printCheck(cart: cart)
 
 // Початок коду сценарію для Пункт 3
 
-/*
 
-print("\nSCENARIO 3:\n")
+print("\n\n\n\nSCENARIO 3:\n\n")
 
 // Користувач обирає якусь кількість товарів
 cart.products = dataMapper.products(from: responseFromServer.sourceProducts)
@@ -425,8 +427,6 @@ screen.printCart(cart: cart, currency: .uah)
 screen.printCart(cart: cart, currency: .usd)
 // Користувач натискає кнопку зміни валюти на EUR
 screen.printCart(cart: cart, currency: .eur)
-
- */
  
 // Кінець коду сценарію для Пункт 3
 
